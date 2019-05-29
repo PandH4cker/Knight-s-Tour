@@ -1,12 +1,14 @@
 #ifndef PATHWAY_H
 #define PATHWAY_H
 
+/** Définition de l'infini **/
 #define IN 99
 
 #include "generate.h"
 #include <string.h>
 #include <limits.h>
 
+/** Prototypes **/
 int minDistance(int dist[], bool sptSet[]);
 int dijkstra(int ** adjacencyMatrix, int src, int dest);
 void findMaxMinDist(int ** adjacencyMatrix);

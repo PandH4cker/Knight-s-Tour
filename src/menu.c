@@ -1,23 +1,25 @@
 #include "../headers/menu.h"
 
+/** Affiche le menu **/
 char printMenu()
 {
 	clrscr();
-	printf("\n\n\t\t\t=== MENU ===\n\n");
-	puts("[1] Print the graph");
-	puts("[2] Calculate the shortest path between two positions");
-	puts("[3] Print optimal zone");
-	puts("[4] Find max minimal distance");
-	puts("[5] Knight's Tour");
-	puts("[Q/q] Exit");
+	color(CYAN), printf("\n\n\t\t\t=== MENU ===\n\n"), resetColor;
+	printf("["), color(YELLOW), printf("1"), resetColor, puts("] Print the graph");
+	printf("["), color(YELLOW), printf("2"), resetColor, puts("] Calculate the shortest path between two positions");
+	printf("["), color(YELLOW), printf("3"), resetColor, puts("] Print optimal zone");
+	printf("["), color(YELLOW), printf("4"), resetColor, puts("] Find max minimal distance");
+	printf("["), color(YELLOW), printf("5"), resetColor, puts("] Knight's Tour");
+	printf("["), color(YELLOW), printf("Q/q"), resetColor, puts("] Exit");
 	puts("Make your choice !");
 	return getchar();
 }
 
+/** Demande avec seuil **/
 void askWithTreshold(int * asked, int ** adjacencyMatrix, Graph g)
 {
 	do {
-		printf("Enter a number between 1 and 64: ");
+		color(RED), printf("Enter a number between 1 and 64: ");
 		if(scanf("%d", asked) != 1)
 		{
 			fprintf(stderr, "[!] You may enter a number\n");
@@ -26,23 +28,24 @@ void askWithTreshold(int * asked, int ** adjacencyMatrix, Graph g)
 			exit(EXIT_FAILURE);
 		}
 	}while(*asked < 1 || *asked > 64);
+	resetColor;
 }
 
+/** Quitte le programme **/
 void exitProg(int ** adjacencyMatrix, Graph g)
 {
 	clrscr();
-	puts("Byebye :)");
+	color(GREEN), puts("Byebye :)"), resetColor;
 	free2D(adjacencyMatrix, NUM_TILES);
 	eraseGraph(g);
-	exit(EXIT_SUCCESS);
+	resetColor, exit(EXIT_SUCCESS);
 }
 
+/** Coeur du programme **/
 void buildProg(void)
 {
 	Graph g = buildKnightGraph();
 	int ** adjacencyMatrix = getAdjacencyMatrix(g);
-	//print2D(adjacencyMatrix, NUM_TILES, NUM_TILES);
-	//exitProg(adjacencyMatrix, g);
 	char choice;
 	do {
 		choice = printMenu();
@@ -80,13 +83,8 @@ void buildProg(void)
 			default:
 			break;
 		}
-		printf("\nReturning to main menu...");
+		color(MAGENTA), printf("\nReturning to main menu..."), resetColor;
 		getchar();
 		getchar();
 	} while(choice != 'q');
-}
-
-void clrscr(void)
-{
-	system("@cls||clear");
 }

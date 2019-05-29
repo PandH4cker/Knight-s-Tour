@@ -1,5 +1,6 @@
 #include "../headers/pathway.h"
 
+/** Récupère la plus petite distance parmis ceux visités **/
 int minDistance(int dist[], bool sptSet[])
 {
 	int min = INT_MAX, min_index;
@@ -9,6 +10,7 @@ int minDistance(int dist[], bool sptSet[])
 	return min_index;
 }
 
+/** Affiche récursivement le chemin **/
 void printPath(int parent[], int j, int dest)
 {
 	if(parent[j] == -1)
@@ -16,30 +18,30 @@ void printPath(int parent[], int j, int dest)
 
 	printPath(parent, parent[j], dest);
 	if(j != dest)
-		printf("%s > ", assignCase(j + 1));
+		color(BLUE), printf("%s", assignCase(j + 1)), resetColor,  printf(" > ");
 	else
-		printf("%s\n", assignCase(j + 1));
+		color(BLUE), printf("%s\n", assignCase(j + 1)), resetColor;
 }
 
+/** Affiche la solution finale **/
 void printSolution(int src, int dest, int dist[], int parent[])
 {
-	printf("Vertex\t\t Distance\t\t Path");
-	printf("\n%s --> %s \t\t %d \t\t %s > ", 
-		   assignCase(src + 1), assignCase(dest + 1), 
-		   dist[dest], assignCase(src + 1));
+	color(MAGENTA), printf("Vertex\t\t"), color(YELLOW), printf("Distance\t\t"), color(CYAN), puts("Path"), resetColor;
+	color(BLUE), printf("%s", assignCase(src + 1)), color(YELLOW), printf(" --> "), color(BLUE), printf("%s \t\t ", assignCase(dest + 1)), color(GREEN), printf("%d \t\t ", dist[dest]), color(BLUE), printf("%s ", assignCase(src + 1)), resetColor, printf("> ");
 	printPath(parent, dest, dest);
 }
 
+/** Dijkstra **/
 int dijkstra(int ** adjacencyMatrix, int src, int dest)
 {
-	printf("[+] Calculating the shortest path for %s --> %s\n", assignCase(src + 1), assignCase(dest + 1));
+	printf("["), color(GREEN), printf("+"), resetColor, printf("] Calculating the shortest path for "), color(BLUE), printf("%s", assignCase(src + 1)), color(YELLOW), printf(" --> "), color(BLUE), printf("%s\n", assignCase(dest + 1)), resetColor;
 	int dist[NUM_TILES];
 	int parent[NUM_TILES];
 	bool sptSet[NUM_TILES];
 
 	parent[src] = -1;
 
-	printf("[+] Initializing the distances\n");
+	printf("["), color(GREEN), printf("+"), resetColor, puts("] Initializing the distances");
 	for(int i = 0; i < NUM_TILES; ++i)
 	{
 		dist[i] = INT_MAX;
@@ -48,7 +50,7 @@ int dijkstra(int ** adjacencyMatrix, int src, int dest)
 
 	dist[src] = 0;
 
-	printf("[+] Calculating the distances\n");
+	printf("["), color(GREEN), printf("+"), resetColor, puts("] Calculating the distances");
 	for(int count = 0; count < NUM_TILES - 1; ++count)
 	{
 		int u = minDistance(dist, sptSet);
@@ -65,12 +67,13 @@ int dijkstra(int ** adjacencyMatrix, int src, int dest)
 
 	}
 
-	printf("[+] Printing solution: \n");
+	printf("["), color(GREEN), printf("+"), resetColor, puts("] Printing solution: \n");
 	printSolution(src, dest, dist, parent);
 
 	return dist[dest];
 }
 
+/** Affiche la distance maximale minimale entre deux cases **/
 void findMaxMinDist(int ** adjacencyMatrix)
 {
 	int maxMinDist = 0;
@@ -86,5 +89,5 @@ void findMaxMinDist(int ** adjacencyMatrix)
 				maxMinDist = tempMax;
 		}
 
-	printf("[+] The max minimal distance is %d\n", maxMinDist);
+	printf("["), color(GREEN), printf("+"), resetColor, printf("] The max minimal distance is %d\n", maxMinDist);
 }

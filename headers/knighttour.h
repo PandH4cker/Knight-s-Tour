@@ -3,7 +3,9 @@
 
 #include "generate.h"
 
+/** Prototypes **/
 void knightTour(int ** adjacencyMatrix, int startingCase);
 void DFS(int ** adjacencyMatrix, int i, bool visited[], int * count, int ** outputMatrix);
 void assignToMatrix(int ** Matrix, int index, int weight);
+
 #endif

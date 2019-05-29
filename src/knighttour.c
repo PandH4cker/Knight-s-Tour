@@ -1,14 +1,14 @@
 #include "../headers/knighttour.h"
 
+/** Parcours en profondeur **/
 void DFS(int ** adjacencyMatrix, int i, bool visited[], int * count, int ** outputMatrix)
 {	
 	assignToMatrix(outputMatrix, i + 1, *count);
 	if(*count < 63)
-		printf("%s[%d](%d) > ", assignCase(i + 1), i,(*count)++);
+		color(BLUE), printf("%s", assignCase(i + 1)), resetColor, printf("["), color(YELLOW), printf("%d", i), resetColor, printf("]"), printf("("), color(GREEN), printf("%d", (*count)++), resetColor, printf(") > ");
 
 	else
-		printf("%s[%d](%d)", assignCase(i + 1), i,(*count));
-
+		color(BLUE), printf("%s", assignCase(i + 1)), resetColor, printf("["), color(YELLOW), printf("%d", i), resetColor, printf("]"), printf("("), color(GREEN), printf("%d", *count), resetColor, printf(")");
 
 	
 	visited[i] = true;
@@ -17,7 +17,7 @@ void DFS(int ** adjacencyMatrix, int i, bool visited[], int * count, int ** outp
 		if(!visited[j] && adjacencyMatrix[i][j])
 			DFS(adjacencyMatrix, j, visited, count, outputMatrix);
 }
-
+ /** Parcours du cavalier **/
 void knightTour(int ** adjacencyMatrix, int startingCase)
 {
 	bool visited[NUM_TILES];
@@ -32,10 +32,12 @@ void knightTour(int ** adjacencyMatrix, int startingCase)
 	DFS(adjacencyMatrix, startingCase - 1, visited, &count, outputMatrix);
 
 	printf("\n\n\n");
+	printf("["), color(GREEN), printf("+"), resetColor, printf("] There is the output matrix for the starting case:"), color(BLUE), printf(" %s\n", assignCase(startingCase)), resetColor;
 	print2D(outputMatrix, NUM_TILES_PER_ROW, NUM_TILES_PER_ROW);
 	free2D(outputMatrix, NUM_TILES_PER_ROW);
 }
 
+/** Assignation à la matrice du parcours du cavalier **/
 void assignToMatrix(int ** Matrix, int index, int weight)
 {
 	int x,y;

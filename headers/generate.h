@@ -1,12 +1,35 @@
 #ifndef GENERATE_H
 #define GENERATE_H 
 
+/** Inclusion des librairies necessaires **/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
+/** 64 case de l'échiquier et 8 par lignes **/
 #define NUM_TILES 64
 #define NUM_TILES_PER_ROW 8
+
+/** Si WINDOWS on inclu conio pour clrscr() **/
+#ifdef _WIN32
+#include <conio.h>
+#endif
+
+/** Définition en macroprocesseur de clrscr() pour UNIX/MACOS **/
+#define clrscr() printf("\e[1;1H\e[2J")
+
+/** Définition en macroprocesseur de color(param) qui permet de changer la couleur du terminal **/
+#define color(param) printf("\033[1;%dm", param)
+#define resetColor printf("\033[0m") // Réinitialise la couleur du terminal
+
+/** Définition des couleurs **/
+#define RED 31
+#define GREEN 32
+#define YELLOW 33
+#define BLUE 34
+#define MAGENTA 35
+#define CYAN 36 
+
 
 /** Définition d'un noeud (sommet) / Une case de l'échiquier **/
 typedef struct NodeListElement
@@ -28,6 +51,7 @@ typedef struct GraphElement
 	AdjacencyList tabNeighbours;
 }GraphElement, * Graph;
 
+/** Prototypes **/
 Graph newChessboardForKnight();
 Graph buildKnightGraph();
 NodeList addNode(int x);

@@ -1,5 +1,6 @@
 #include "../headers/generate.h"
 
+/** Mapping du Chessboard **/
 const char * CHESSBOARD[8][8] = { 
 	{ "A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1" },	//0
 	{ "A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2" }, //2
@@ -12,13 +13,14 @@ const char * CHESSBOARD[8][8] = {
 
 };
 
+/** Génération d'un graphe 64x64 **/
 Graph newChessboardForKnight()
 {
 	GraphElement * element;
 	element = malloc(sizeof(*element));
 	if(!element)
 	{
-		fprintf(stderr, "[!] Unable to allocate the chessboard, out of memory\n");
+		printf("["), color(RED), printf("!"), resetColor, fprintf(stderr, "] Unable to allocate the chessboard, out of memory\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -27,7 +29,7 @@ Graph newChessboardForKnight()
 	element->tabNeighbours = malloc(NUM_TILES * sizeof(AdjacencyListElement));
 	if(!element->tabNeighbours)
 	{
-		fprintf(stderr, "[!] Unable to allocate the neighbours, out of memory\n");
+		printf("["), color(RED), printf("!"), resetColor, fprintf(stderr, "] Unable to allocate the neighbours, out of memory\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -37,17 +39,19 @@ Graph newChessboardForKnight()
 	return element;
 }
 
+/** Si le graphe est vide **/
 bool isEmptyGraph(Graph g)
 {
 	return !g ? true : false;
 }
 
+/** Ajout d'un noeud **/
 NodeList addNode(int x)
 {
 	NodeListElement * n = malloc(sizeof(NodeListElement));
 	if(!n)
 	{
-		fprintf(stderr, "[!] Unable to allocate the node, out of memory\n");
+		printf("["), color(RED), printf("!"), resetColor, fprintf(stderr, "] Unable to allocate the node, out of memory\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -57,6 +61,7 @@ NodeList addNode(int x)
 	return n;
 }
 
+/** Assignationdes cases en fonction de la valeur de la case (i.e 0 === A1) **/ 
 const char * assignCase(int x)
 {
 	if(x == 49)
@@ -83,6 +88,7 @@ const char * assignCase(int x)
 
 }
 
+/** Ajout d'un arc **/
 void addEdge(Graph g, int src, int dest)
 {
 	NodeList n = addNode(dest);
@@ -90,41 +96,56 @@ void addEdge(Graph g, int src, int dest)
 	g->tabNeighbours[src - 1].begin = n;
 }
 
+/** Affichage du graphe **/
 void printGraph(Graph g)
 {
-	puts("[+] Printing graph :");
+	printf("["), color(GREEN), printf("+"), resetColor, puts("] Printing graph :");
 	for(int i = 1; i < g->nbVertices + 1; ++i)
 	{
 		NodeList n = g->tabNeighbours[i - 1].begin;
-		printf("(%d) Case %s: [", i, assignCase(i));
+		printf("(%d) Case ", i), color(BLUE), printf("%s", assignCase(i)), resetColor, printf(": [");
 
 		while(n)
 		{
 			if(n->next)
-				printf("%s, ", assignCase(n->value));
+				color(GREEN), printf("%s", assignCase(n->value)), resetColor, printf(", ");
 			else
-				printf("%s", assignCase(n->value));
+				color(GREEN), printf("%s", assignCase(n->value)), resetColor;
 			n = n->next;
 		}
 		puts("]");
 	}
 }
 
+/** Affiche la zone optimale où on peut jouer **/
 void printOptimalZone(Graph g)
 {
-	puts("[+] Printing Optimal Zone:");
+	printf("["), color(GREEN), printf("+"), resetColor, puts("] Printing Optimal Zone:");
 	for(int i = 1; i < g->nbVertices + 1; ++i)
 	{
 		NodeList n = g->tabNeighbours[i - 1].begin;
-		printf("%3d ", getLength(n));
+		int length = getLength(n);
+		if(length == 2)
+			color(RED);
+		else if(length == 3)
+			color(MAGENTA);
+		else if(length == 4)
+			color(BLUE);
+		else if(length == 6)
+			color(YELLOW);
+		else if(length == 8)
+			color(GREEN);
+		printf("%3d ", length), resetColor;
 		if(!(i % 8))
 			puts("");
 	}
+	printf("In "), color(GREEN), printf("green"), resetColor, puts(" this is the optimal zone to play with the Knight");
 }
 
+/** Efface le graphe **/
 void eraseGraph(Graph g)
 {
-	puts("[-] Erasing graph");
+	printf("["), color(RED), printf("-"), resetColor, puts("] Erasing graph");
 	if(!isEmptyGraph(g))
 	{
 		if(g->tabNeighbours)
@@ -146,12 +167,16 @@ void eraseGraph(Graph g)
 	}
 }
 
+/** Construit le graphe pour le cavalier
+ * 
+ *  et le tri dans l'ordre croissant pour extraire plus facilement la matrice d'adjacence 
+**/
 Graph buildKnightGraph()
 {
-	puts("[+] Creating the Knight's Graph");
+	printf("["), color(GREEN), printf("+"), resetColor, puts("] Creating the Knight's Graph");
 	Graph g = newChessboardForKnight();
 
-	puts("[+] Assigning edges to the graph");
+	printf("["), color(GREEN), printf("+"), resetColor, puts("] Assigning edges to the graph");
 	for(int i = 1; i < g->nbVertices + 1; ++i)
 		assignEdges(g, i);
 
@@ -160,6 +185,7 @@ Graph buildKnightGraph()
 	return g;
 }
 
+/** Si on est en dehors de l'échiquier **/
 bool isOutOfBounds(int x)
 {
 	if(x < 0 || x > NUM_TILES)
@@ -167,6 +193,7 @@ bool isOutOfBounds(int x)
 	return false;
 }
 
+/** Assigne les arcs pour le graphe du cavalier **/
 void assignEdges(Graph g, int position)
 {
 	int * legalMoves = calculateLegalMoves(position);
@@ -177,12 +204,13 @@ void assignEdges(Graph g, int position)
 	free(legalMoves);
 }
 
+/** Calcule les moves légaux et les renvois sous forme d'un tableau **/
 int * calculateLegalMoves(int position)
 {
 	int * legalMove = malloc(NUM_TILES_PER_ROW * sizeof(int));
 	if(!legalMove)
 	{
-		fprintf(stderr, "[!] Unable to allocate legal moves, out of memory\n");
+		printf("["), color(RED), printf("!"), resetColor, fprintf(stderr, "] Unable to allocate legal moves, out of memory\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -201,11 +229,13 @@ int * calculateLegalMoves(int position)
 	return legalMove;
 }
 
+/** Si le move est valide **/
 bool isValidMove(int position, int candidate)
 {
 	return !isOnSameLine(position, candidate) && !isExclusionChessboard(position, candidate);
 }
 
+/** Extrait la matrice a partir des listes d'adjacences du graphe **/
 int ** getAdjacencyMatrix(Graph g)
 {
 	int ** adjacencyMatrix = (int **)calloc(NUM_TILES, sizeof(int *));
@@ -232,6 +262,7 @@ int ** getAdjacencyMatrix(Graph g)
 	return adjacencyMatrix;
 }
 
+/** Swap deux noeuds **/
 NodeList swapNode(NodeList n1, NodeList n2)
 {
 	NodeList n = n2->next;
@@ -240,6 +271,7 @@ NodeList swapNode(NodeList n1, NodeList n2)
 	return n2;
 }
 
+/** Bubblesort sur liste **/
 void bubbleSort(NodeList * head, int count)
 {
 	NodeList * h;
@@ -270,6 +302,7 @@ void bubbleSort(NodeList * head, int count)
 	}
 }
 
+/** Graph sort utilisant bubble sort **/
 void graphSort(Graph g)
 {
 	for(int i = 1; i < g->nbVertices + 1; ++i)
@@ -279,12 +312,14 @@ void graphSort(Graph g)
 	}
 }
 
+/** Accesseur de la taille de la liste **/
 int getLength(NodeList n)
 {
 	if(!n) return 0;
 	return 1 + getLength(n->next);
 }
 
+/** Efface une matrice 2D **/
 void free2D(int ** matrix, int nbLine)
 {
 	for(int i = 0; i < nbLine; ++i)
@@ -292,6 +327,7 @@ void free2D(int ** matrix, int nbLine)
 	free(matrix);
 }
 
+/** Affice une matrice 2D **/
 void print2D(int ** matrix, int nbLine, int nbCol)
 {
 	for(int i = 0; i < nbLine; ++i)
@@ -301,6 +337,32 @@ void print2D(int ** matrix, int nbLine, int nbCol)
 		printf("\n");
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 bool isOnSameLine(int position, int candidate)
 {
@@ -325,11 +387,11 @@ bool isExclusionChessboard(int position, int candidate)
 			(position == 17 && (candidate == 7 || candidate == 32)) || 
 			(position == 18 && candidate == 8) || 
 			(position == 23 && candidate == 33) || 
-			(position == 24 && (candidate == 41 || candidate == 9)) || 
+			(position == 24 && (candidate == 41 || candidate == 9 || candidate == 34)) || 
 			(position == 25 && (candidate == 40 || candidate == 15 || candidate == 8)) || 
 			(position == 26 && candidate == 16) || 
 			(position == 31 && candidate == 41) || 
-			(position == 32 && (candidate == 41 || candidate == 42 || candidate == 17)) || 
+			(position == 32 && (candidate == 41 || candidate == 42 || candidate == 17 || candidate == 49)) || 
 			(position == 33 && (candidate == 48 || candidate == 23 || candidate == 16)) || 
 			(position == 34 && candidate == 24) || 
 			(position == 39 && candidate == 49) || 
@@ -341,6 +403,6 @@ bool isExclusionChessboard(int position, int candidate)
 			(position == 49 && (candidate == 64 || candidate == 32 || candidate == 39)) || 
 			(position == 50 && candidate == 40) || 
 			(position == 56 && candidate == 41) || 
-			(position == 57 && (candidate == 47 || candidate == 40)) || (position == 58 && candidate == 48) || 
+			(position == 57 && (candidate == 47 || candidate == 40)) || (position == 58 && candidate == 48) ||
 			(position == 64 && candidate == 49));
 }
